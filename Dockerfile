@@ -4,7 +4,7 @@ FROM debian:bullseye-slim as downloader
 
 ENV AGENDAV_VERSION 2.6.0
 
-ADD https://github.com/dmwg/agendav/releases/download/$AGENDAV_VERSION/agendav-$AGENDAV_VERSION.tar.gz /tmp/
+ADD https://github.com/dmwg/agendav/releases/download/$AGENDAV_VERSION/$AGENDAV_VERSION.tar.gz /tmp/
 
 RUN cd /tmp && \
     tar -xf agendav-$AGENDAV_VERSION.tar.gz -C /tmp && \
