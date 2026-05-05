@@ -55,6 +55,7 @@ RUN chmod +x /tmp/pre-env.sh && \
     echo 'magic_quotes_runtime = false' >> ${PHP_INI_DIR}/php.ini && \
     echo 'openssl.cafile = "/etc/ssl/certs/cacert.pem"' >> ${PHP_INI_DIR}/php.ini && \
     echo 'curl.cainfo = "/etc/ssl/certs/cacert.pem"' >> ${PHP_INI_DIR}/php.ini && \
+    composer install -d /var/www/agendav/web/ && \
     /bin/bash /tmp/pre-env.sh && \
     rm /tmp/pre-env.sh && \
     cd /var/www/agendav && \
@@ -68,7 +69,6 @@ RUN chmod +x /tmp/pre-env.sh && \
     a2dissite 000-default && \
     a2enmod rewrite && \
     echo "Listen 127.0.0.1:8080" > /etc/apache2/ports.conf && \
-    composer install -d /var/www/agendav/web/ && \
     service apache2 restart && \
     service apache2 stop &&  \
     echo "Listen 8080" > /etc/apache2/ports.conf
