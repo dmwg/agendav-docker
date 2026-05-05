@@ -55,7 +55,7 @@ RUN chmod +x /tmp/pre-env.sh && \
     chmod 755 ${APACHE_LOG_DIR} && \
     chown -R www-data:www-data ${APACHE_LOG_DIR} && \
     cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini && \
-    echo 'date.timezone = "$AGENDAV_TIMEZONE"' >> ${PHP_INI_DIR}/php.ini && \
+    echo 'date.timezone = "AGENDAV_TIMEZONE"' >> ${PHP_INI_DIR}/php.ini && \
     echo 'magic_quotes_runtime = false' >> ${PHP_INI_DIR}/php.ini && \
     echo 'openssl.cafile = "/etc/ssl/certs/cacert.pem"' >> ${PHP_INI_DIR}/php.ini && \
     echo 'curl.cainfo = "/etc/ssl/certs/cacert.pem"' >> ${PHP_INI_DIR}/php.ini && \
