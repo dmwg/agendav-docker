@@ -7,8 +7,8 @@ ENV AGENDAV_VERSION 2.6.0
 ADD https://github.com/dmwg/agendav/archive/refs/tags/v$AGENDAV_VERSION.tar.gz /tmp/
 
 RUN cd /tmp && \
-    tar -xf agendav-$AGENDAV_VERSION.tar.gz -C /tmp && \
-    mv /tmp/agendav-$AGENDAV_VERSION /tmp/agendav
+    tar -xf v$AGENDAV_VERSION.tar.gz -C /tmp && \
+    mv /tmp/v$AGENDAV_VERSION /tmp/agendav
 
 
 FROM php:${PHP_VERSION}-apache-bullseye
