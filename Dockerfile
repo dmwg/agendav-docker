@@ -36,6 +36,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY --from=downloader --chown=www-data:www-data /tmp/agendav /var/www/agendav
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 COPY agendav.conf /etc/apache2/sites-available/agendav.conf
 COPY settings.php /var/www/agendav/web/config/settings.php
@@ -55,7 +56,7 @@ RUN chmod +x /tmp/pre-env.sh && \
     echo 'magic_quotes_runtime = false' >> ${PHP_INI_DIR}/php.ini && \
     echo 'openssl.cafile = "/etc/ssl/certs/cacert.pem"' >> ${PHP_INI_DIR}/php.ini && \
     echo 'curl.cainfo = "/etc/ssl/certs/cacert.pem"' >> ${PHP_INI_DIR}/php.ini && \
-    /usr/bin/composer install -d /var/www/agendav/web/ && \
+    /usr/local/bin/composer install -d /var/www/agendav/web/ && \
     /bin/bash /tmp/pre-env.sh && \
     rm /tmp/pre-env.sh && \
     cd /var/www/agendav && \
