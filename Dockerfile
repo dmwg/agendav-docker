@@ -84,7 +84,8 @@ RUN chmod +x /tmp/pre-env.sh && \
 
 RUN ln -sf /dev/stdout ${APACHE_LOG_DIR}/access.log \
     && ln -sf /dev/stderr ${APACHE_LOG_DIR}/error.log \
-    && ln -sf /dev/stderr ${APACHE_LOG_DIR}/davi-error.log
+    && ln -sf /dev/stderr ${APACHE_LOG_DIR}/davi-error.log \
+    && ln -sf /dev/stdout ${APACHE_LOG_DIR}/davi-debug.log
 
 EXPOSE 8080
 
