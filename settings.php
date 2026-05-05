@@ -1,14 +1,13 @@
 <?php
-// Trusted proxy ips
-$app['proxies'] = ['192.168.96.0/24'];
 // Site title
 $app['site.title'] = 'AGENDAV_TITLE';
 // Site logo (should be placed in public/img). Optional
 $app['site.logo'] = 'agendav_100transp.png';
 // Site footer. Optional
 $app['site.footer'] = 'AGENDAV_FOOTER';
+
 // Trusted proxy ips
-$app['proxies'] = [];
+$app['proxies'] = ['192.168.96.0/24'];
 // Database settings
 $app['db.options'] = [
     	'path' => '/var/agendav/db.sqlite',
