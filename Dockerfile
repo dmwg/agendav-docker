@@ -8,7 +8,7 @@ ADD https://github.com/dmwg/agendav/archive/refs/tags/v$AGENDAV_VERSION.tar.gz /
 
 RUN cd /tmp && \
     tar -xf v$AGENDAV_VERSION.tar.gz -C /tmp && \
-    mv /tmp/v$AGENDAV_VERSION /tmp/agendav
+    mv /tmp/agendav-$AGENDAV_VERSION /tmp/agendav
 
 
 FROM php:${PHP_VERSION}-apache-bullseye
