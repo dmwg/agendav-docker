@@ -1,6 +1,6 @@
 <?php
 // Trusted proxy ips
-$app['proxies'] = ['127.0.0.1','192.168.96.1'];
+$app['proxies'] = ['192.168.96.0/24'];
 // Site title
 $app['site.title'] = 'AGENDAV_TITLE';
 // Site logo (should be placed in public/img). Optional
