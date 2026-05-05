@@ -7,7 +7,7 @@ $app['site.logo'] = 'agendav_100transp.png';
 $app['site.footer'] = 'AGENDAV_FOOTER';
 
 // Trusted proxy ips
-$app['proxies'] = [];
+$app['proxies'] = ['127.0.0.1'];
 // Database settings
 $app['db.options'] = [
     	'path' => '/var/agendav/db.sqlite',
