@@ -5,7 +5,6 @@ FROM debian:bullseye-slim as downloader
 ENV AGENDAV_VERSION 2.6.0
 
 ADD https://github.com/agendav/agendav/releases/download/$AGENDAV_VERSION/agendav-$AGENDAV_VERSION.tar.gz /tmp/
-
 RUN cd /tmp && \
     tar -xf agendav-$AGENDAV_VERSION.tar.gz -C /tmp && \
     mv /tmp/agendav-$AGENDAV_VERSION /tmp/agendav
@@ -49,6 +48,7 @@ COPY --from=downloader --chown=www-data:www-data /tmp/agendav /var/www/agendav
 
 COPY agendav.conf /etc/apache2/sites-available/agendav.conf
 COPY settings.php /var/www/agendav/web/config/settings.php
+COPY index.php /var/www/agendav/web/public/index.php
 COPY run.sh /usr/local/bin/run.sh
 COPY pre-env.sh /tmp/pre-env.sh
 
