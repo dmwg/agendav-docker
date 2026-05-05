@@ -68,6 +68,7 @@ RUN chmod +x /tmp/pre-env.sh && \
     a2dissite 000-default && \
     a2enmod rewrite && \
     echo "Listen 127.0.0.1:8080" > /etc/apache2/ports.conf && \
+    composer install -d /var/www/agendav/web/ && \
     service apache2 restart && \
     service apache2 stop &&  \
     echo "Listen 8080" > /etc/apache2/ports.conf
