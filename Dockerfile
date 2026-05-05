@@ -9,6 +9,7 @@ ADD https://github.com/dmwg/agendav/archive/refs/tags/v$AGENDAV_VERSION.tar.gz /
 RUN cd /tmp && \
     tar -xf v$AGENDAV_VERSION.tar.gz -C /tmp && \
     mv /tmp/agendav-$AGENDAV_VERSION /tmp/agendav
+COPY vendor /tmp/agendav/web/vendor
 
 
 FROM php:${PHP_VERSION}-apache-bullseye
@@ -35,8 +36,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ADD vendor /tmp/agendav/web/vendor
-RUN ls -la /tmp/agendav/web/
 COPY --from=downloader --chown=www-data:www-data /tmp/agendav /var/www/agendav
 #COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 #    /usr/local/bin/composer update -d /var/www/agendav/web/ && \
