@@ -79,7 +79,9 @@ RUN chmod +x /tmp/pre-env.sh && \
     echo "Listen 127.0.0.1:8080" > /etc/apache2/ports.conf && \
     service apache2 restart && \
     service apache2 stop &&  \
-    echo "Listen 8080" > /etc/apache2/ports.conf
+    echo "Listen 8080" > /etc/apache2/ports.conf && \
+    service apache2 restart && \
+    service apache2 stop 
 
 RUN ln -sf /dev/stdout ${APACHE_LOG_DIR}/access.log \
     && ln -sf /dev/stderr ${APACHE_LOG_DIR}/error.log \
