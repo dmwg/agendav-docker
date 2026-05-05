@@ -4,12 +4,18 @@ FROM debian:bullseye-slim as downloader
 
 ENV AGENDAV_VERSION 2.6.0
 
-ADD https://github.com/dmwg/agendav/archive/refs/tags/v$AGENDAV_VERSION.tar.gz /tmp/
+ADD https://github.com/agendav/agendav/releases/download/$AGENDAV_VERSION/agendav-$AGENDAV_VERSION.tar.gz /tmp/
 
 RUN cd /tmp && \
-    tar -xf v$AGENDAV_VERSION.tar.gz -C /tmp && \
+    tar -xf agendav-$AGENDAV_VERSION.tar.gz -C /tmp && \
     mv /tmp/agendav-$AGENDAV_VERSION /tmp/agendav
-COPY vendor /tmp/agendav/web/vendor
+
+#ADD https://github.com/dmwg/agendav/archive/refs/tags/v$AGENDAV_VERSION.tar.gz /tmp/
+#
+#RUN cd /tmp && \
+#    tar -xf v$AGENDAV_VERSION.tar.gz -C /tmp && \
+#    mv /tmp/agendav-$AGENDAV_VERSION /tmp/agendav
+#COPY vendor /tmp/agendav/web/vendor
 
 
 FROM php:${PHP_VERSION}-apache-bullseye
