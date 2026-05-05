@@ -36,6 +36,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ADD vendor /tmp/agendav/web/vendor
+RUN ls -la /tmp/agendav/web/
 COPY --from=downloader --chown=www-data:www-data /tmp/agendav /var/www/agendav
 #COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 #    /usr/local/bin/composer update -d /var/www/agendav/web/ && \
