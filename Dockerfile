@@ -48,7 +48,6 @@ COPY --from=downloader --chown=www-data:www-data /tmp/agendav /var/www/agendav
 
 COPY agendav.conf /etc/apache2/sites-available/agendav.conf
 COPY settings.php /var/www/agendav/web/config/settings.php
-COPY index.php /var/www/agendav/web/public/index.php
 COPY run.sh /usr/local/bin/run.sh
 COPY pre-env.sh /tmp/pre-env.sh
 
@@ -84,8 +83,7 @@ RUN chmod +x /tmp/pre-env.sh && \
 
 RUN ln -sf /dev/stdout ${APACHE_LOG_DIR}/access.log \
     && ln -sf /dev/stderr ${APACHE_LOG_DIR}/error.log \
-    && ln -sf /dev/stderr ${APACHE_LOG_DIR}/davi-error.log \
-    && ln -sf /dev/stdout ${APACHE_LOG_DIR}/davi-debug.log
+    && ln -sf /dev/stderr ${APACHE_LOG_DIR}/davi-error.log
 
 EXPOSE 8080
 
