@@ -1,8 +1,16 @@
-FROM php:8.2-fpm-alpine AS base
+# ── Stage 1: grab the official Caddy binary ───────────────────────────────────
+# The official caddy image ships a complete build that includes the
+# 'static' trusted_proxies module. The Alpine package repo does not.
+FROM caddy:2-alpine AS caddy
+ 
+# ── Stage 2: PHP-FPM + AgenDAV ───────────────────────────────────────────────
+FROM php:8.2-fpm-alpine
+ 
+# ── Copy Caddy from the official image ────────────────────────────────────────
+COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 
 # ── System deps ───────────────────────────────────────────────────────────────
 RUN apk add --no-cache \
-        caddy \
         postgresql-client \
         sqlite-libs \
         curl \
