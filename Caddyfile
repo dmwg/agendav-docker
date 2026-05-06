@@ -26,38 +26,23 @@
     # ── Redirect /view → /view/ ─────────────────────────────────────────────────
     redir /view /view/ permanent
 
-    # All requests under /view/* go through this route block, which enforces
-    # strict ordering: static files first, PHP second.
     route /view/* {
-
-        # ── Static assets ─────────────────────────────────────────────────────
-        # Strip /view, check if the file exists on disk, serve it if so.
-        # Because uri strip_prefix runs before file_server inside route,
-        # the file matcher sees the stripped path and finds the file correctly.
         uri strip_prefix /view
         root * /var/www/agendav/web/public
 
-        @static file
-        handle @static {
-            file_server
+        # pass_thru makes file_server non-terminal: if the file doesn't exist
+        # on disk it passes the request to the next handler (reverse_proxy).
+        file_server {
+            pass_thru
         }
 
-        # ── PHP front controller ───────────────────────────────────────────────
-        # For everything else, route to PHP-FPM.
-        # We must restore the /view prefix in SCRIPT_NAME so Symfony's base-path
-        # detection correctly strips /view from REQUEST_URI to get the route.
-        # REQUEST_URI still has /view (it reflects the original request, not
-        # the uri-stripped version) because uri only mutates Caddy's internal
-        # path, not the FastCGI REQUEST_URI variable.
-        handle {
-            reverse_proxy unix//run/php-fpm.sock {
-                transport fastcgi {
-                    root /var/www/agendav/web/public
-                    split .php
-                    env SCRIPT_FILENAME /var/www/agendav/web/public/index.php
-                    env SCRIPT_NAME     /view/index.php
-                    env HTTPS           on
-                }
+        reverse_proxy unix//run/php-fpm.sock {
+            transport fastcgi {
+                root /var/www/agendav/web/public
+                split .php
+                env SCRIPT_FILENAME /var/www/agendav/web/public/index.php
+                env SCRIPT_NAME     /view/index.php
+                env HTTPS           on
             }
         }
     }
