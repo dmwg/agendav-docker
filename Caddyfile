@@ -26,40 +26,38 @@
     # ── Redirect /view → /view/ ─────────────────────────────────────────────────
     redir /view /view/ permanent
 
-    # ── Static assets ─────────────────────────────────────────────────────────
-    # Requests that map to a real file under web/public are served directly.
-    # Strip /view so the file_server can find them on disk.
-    handle_path /view/index.php {
-        # Prevent direct requests to index.php falling through to file_server.
-        # Route them to PHP below instead.
-        redir / /view/ permanent
-    }
+    # All requests under /view/* go through this route block, which enforces
+    # strict ordering: static files first, PHP second.
+    route /view/* {
 
-    @static {
-        path /view/*
-        file {
-            root /var/www/agendav/web/public
-            try_files {path_regexp /view/(.*) /$1}
-        }
-    }
-    handle @static {
-        root * /var/www/agendav/web/public
+        # ── Static assets ─────────────────────────────────────────────────────
+        # Strip /view, check if the file exists on disk, serve it if so.
+        # Because uri strip_prefix runs before file_server inside route,
+        # the file matcher sees the stripped path and finds the file correctly.
         uri strip_prefix /view
-        file_server
-    }
+        root * /var/www/agendav/web/public
 
-    # ── PHP requests ──────────────────────────────────────────────────────────
-    # All /view/* requests that aren't static files go to PHP-FPM.
-    # We set SCRIPT_NAME to /view/index.php so Symfony's base-path detection
-    # correctly strips /view from REQUEST_URI when computing the route.
-    handle /view/* {
-        reverse_proxy unix//run/php-fpm.sock {
-            transport fastcgi {
-                root /var/www/agendav/web/public
-                split .php
-                env SCRIPT_FILENAME /var/www/agendav/web/public/index.php
-                env SCRIPT_NAME     /view/index.php
-                env HTTPS           on
+        @static file
+        handle @static {
+            file_server
+        }
+
+        # ── PHP front controller ───────────────────────────────────────────────
+        # For everything else, route to PHP-FPM.
+        # We must restore the /view prefix in SCRIPT_NAME so Symfony's base-path
+        # detection correctly strips /view from REQUEST_URI to get the route.
+        # REQUEST_URI still has /view (it reflects the original request, not
+        # the uri-stripped version) because uri only mutates Caddy's internal
+        # path, not the FastCGI REQUEST_URI variable.
+        handle {
+            reverse_proxy unix//run/php-fpm.sock {
+                transport fastcgi {
+                    root /var/www/agendav/web/public
+                    split .php
+                    env SCRIPT_FILENAME /var/www/agendav/web/public/index.php
+                    env SCRIPT_NAME     /view/index.php
+                    env HTTPS           on
+                }
             }
         }
     }
