@@ -37,7 +37,7 @@ RUN mkdir -p /var/agendav && \
     chown -R www-data:www-data /var/agendav && \
     chmod 640 /var/agendav/db.sqlite && \
     chmod +x /entrypoint.sh && \
-    yes | php agendavcli migrations:migrate
+    yes | php /var/www/agendav/agendavcli migrations:migrate
 
 EXPOSE 8080
 
