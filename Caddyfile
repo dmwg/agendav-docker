@@ -13,31 +13,27 @@
     # ── Redirect /view → /view/ ─────────────────────────────────────────────
     redir /view /view/ permanent
 
-    # Root for the whole site block — required for the file matcher to work
-    root * /var/www/agendav/web/public
+    # ── All /view/* traffic ─────────────────────────────────────────────────
+    # handle_path strips /view before the inner route runs, so file_server
+    # sees /css/app.css and finds it under web/public directly.
+    handle_path /view/* {
+        root * /var/www/agendav/web/public
 
-    # ── Static assets ───────────────────────────────────────────────────────
-    # file matcher checks if the path (with /view stripped) exists on disk.
-    @static {
-        path /view/*
-        file {
-            try_files {path_regexp (/view)?(.*) /$2}
-        }
-    }
-    handle @static {
-        uri strip_prefix /view
-        file_server
-    }
+        route {
+            # 1. Serve the file if it exists on disk — static assets, etc.
+            file_server {
+                pass_thru
+            }
 
-    # ── PHP requests ────────────────────────────────────────────────────────
-    handle /view/* {
-        reverse_proxy unix//run/php-fpm.sock {
-            transport fastcgi {
-                root /var/www/agendav/web/public
-                split .php
-                env SCRIPT_FILENAME /var/www/agendav/web/public/index.php
-                env SCRIPT_NAME     /view/index.php
-                env HTTPS           off
+            # 2. Everything else goes to PHP-FPM.
+            reverse_proxy unix//run/php-fpm.sock {
+                transport fastcgi {
+                    root /var/www/agendav/web/public
+                    split .php
+                    env SCRIPT_FILENAME /var/www/agendav/web/public/index.php
+                    env SCRIPT_NAME     /view/index.php
+                    env HTTPS           on
+                }
             }
         }
     }
