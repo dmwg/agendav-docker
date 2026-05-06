@@ -27,13 +27,10 @@ RUN curl -fsSL \
     && rm /tmp/agendav.tar.gz \
     && chown -R www-data:www-data /var/www/agendav
 
-# ── PHP-FPM: listen on a Unix socket ─────────────────────────────────────────
-RUN sed -i \
-        -e 's|listen = 127.0.0.1:9000|listen = /run/php-fpm.sock|' \
-        -e 's|;listen.owner = .*|listen.owner = caddy|' \
-        -e 's|;listen.group = .*|listen.group = caddy|' \
-        -e 's|;listen.mode = .*|listen.mode = 0660|' \
-        /usr/local/etc/php-fpm.d/www.conf
+# ── PHP-FPM: Unix socket config ───────────────────────────────────────────────
+# Drop a dedicated pool override instead of sed-patching the default www.conf,
+# which is fragile due to varying comment styles across image versions.
+COPY php-fpm-pool.conf /usr/local/etc/php-fpm.d/zz-socket.conf
 
 # ── Caddy config ──────────────────────────────────────────────────────────────
 COPY Caddyfile /etc/caddy/Caddyfile
