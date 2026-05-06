@@ -25,26 +25,21 @@
     # ── Redirect /view → /view/ ─────────────────────────────────────────────────
     redir /view /view/ permanent
 
-    # ── Strip prefix, then serve AgenDAV ─────────────────────────────────────
-    handle /view/* {
+    # ── Serve AgenDAV under /view/ and /view (exact) ───────────────────────────
+    # Use a path_regexp matcher to catch both /view/ and /view/anything
+    @agendav path /view/ /view/*
+
+    handle @agendav {
         uri strip_prefix /view
 
-        # Static assets: serve directly from disk (no PHP needed).
-        # Caddy tries the file first; if not found, falls through to PHP-FPM.
         root * /var/www/agendav/web/public
 
-        # Try to serve as a static file, otherwise hand off to PHP via index.php
-        try_files {path} /index.php?{query}
-
-        # PHP-FPM via Unix socket
+        # php_fastcgi already handles try_files internally:
+        # it tries the file on disk first, falls back to index.php.
+        # Do NOT add a separate file_server or try_files alongside it.
         php_fastcgi unix//run/php-fpm.sock {
-            # SCRIPT_FILENAME is set automatically by php_fastcgi.
-            # Pass the real HTTPS scheme so AgenDAV can build correct URLs
-            # and set secure-only cookies.
             env HTTPS on
         }
-
-        file_server
     }
 
     # ── Health-check ──────────────────────────────────────────────────────────
