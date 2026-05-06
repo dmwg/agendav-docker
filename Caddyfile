@@ -11,6 +11,7 @@
 {
     admin off
     auto_https off
+    debug
 
     # trusted_proxies is a global option — it cannot appear inside a site block.
     # This tells Caddy to trust X-Forwarded-* headers from these source IPs.
@@ -43,6 +44,6 @@
 
     # ── Anything else → 404 ───────────────────────────────────────────────────
     handle {
-        respond "Not found" 404
+        respond "Not found - path: {http.request.uri}" 404
     }
 }
