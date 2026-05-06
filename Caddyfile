@@ -27,19 +27,18 @@
     redir /view /view/ permanent
 
     # ── Serve AgenDAV under /view/ and /view (exact) ───────────────────────────
-    handle_path /view/* {
+    handle /view/* {
 
         root * /var/www/agendav/web/public
 
-        # php_fastcgi already handles try_files internally:
-        # it tries the file on disk first, falls back to index.php.
-        # Do NOT add a separate file_server or try_files alongside it.
+        # Rewrite all non-file requests to /cal/index.php, preserving the
+        # full /cal prefix so Symfony can correctly compute the base path.
+        @notfile not file {path}
+        rewrite @notfile /view/index.php
+
         php_fastcgi unix//run/php-fpm.sock {
             env HTTPS on
-            # Rewrite all requests to index.php; the original path becomes
-            # PATH_INFO which Silex uses for routing.
-            try_files {path} index.php
-            split /index.php
+            root /var/www/agendav/web/public
         }
 
         file_server
