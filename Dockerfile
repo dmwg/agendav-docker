@@ -32,7 +32,12 @@ COPY Caddyfile /etc/caddy/Caddyfile
 
 # ── Entrypoint ────────────────────────────────────────────────────────────────
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN mkdir -p /var/agendav && \
+    touch /var/agendav/db.sqlite && \
+    chown -R www-data:www-data /var/agendav && \
+    chmod 640 /var/agendav/db.sqlite && \
+    chmod +x /entrypoint.sh && \
+    yes | php agendavcli migrations:migrate
 
 EXPOSE 8080
 

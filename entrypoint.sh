@@ -9,8 +9,8 @@ if [ ! -f /var/www/agendav/web/config/settings.php ]; then
 fi
 
 # ── Run DB migrations (idempotent) ────────────────────────────────────────────
-echo "Running AgenDAV database migrations..."
-php /var/www/agendav/agendavcli migrations:migrate --no-interaction
+#~ echo "Running AgenDAV database migrations..."
+#~ php /var/www/agendav/agendavcli migrations:migrate --no-interaction
 
 # ── Start PHP-FPM in the background ──────────────────────────────────────────
 echo "Starting PHP-FPM..."
