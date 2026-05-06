@@ -11,6 +11,13 @@
 {
     admin off
     auto_https off
+
+    # trusted_proxies is a global option — it cannot appear inside a site block.
+    # This tells Caddy to trust X-Forwarded-* headers from these source IPs.
+    # Restrict to your actual upstream IP/subnet in production.
+    servers {
+        trusted_proxies static private_ranges
+    }
 }
 
 :8080 {
