@@ -26,11 +26,7 @@
     redir /view /view/ permanent
 
     # ── Serve AgenDAV under /view/ and /view (exact) ───────────────────────────
-    # Use a path_regexp matcher to catch both /view/ and /view/anything
-    @agendav path /view/ /view/*
-
-    handle @agendav {
-        uri strip_prefix /view
+    handle_path /view/* {
 
         root * /var/www/agendav/web/public
 
