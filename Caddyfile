@@ -36,7 +36,13 @@
         # Do NOT add a separate file_server or try_files alongside it.
         php_fastcgi unix//run/php-fpm.sock {
             env HTTPS on
+            # Rewrite all requests to index.php; the original path becomes
+            # PATH_INFO which Silex uses for routing.
+            try_files {path} index.php
+            split /index.php
         }
+
+        file_server
     }
 
     # ── Health-check ──────────────────────────────────────────────────────────
