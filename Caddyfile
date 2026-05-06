@@ -13,18 +13,24 @@
     # ── Redirect /view → /view/ ─────────────────────────────────────────────
     redir /view /view/ permanent
 
+    # Root for the whole site block — required for the file matcher to work
+    root * /var/www/agendav/web/public
+
     # ── Static assets ───────────────────────────────────────────────────────
-    # handle_path strips /view before passing to file_server.
-    # If the file doesn't exist on disk, the request falls through to the
-    # next matching handle block (PHP below).
-    handle_path /view/* {
-        root * /var/www/agendav/web/public
-        try_files {path} @php
+    # file matcher checks if the path (with /view stripped) exists on disk.
+    @static {
+        path /view/*
+        file {
+            try_files {path_regexp (/view)?(.*) /$2}
+        }
+    }
+    handle @static {
+        uri strip_prefix /view
         file_server
     }
 
     # ── PHP requests ────────────────────────────────────────────────────────
-    handle @php {
+    handle /view/* {
         reverse_proxy unix//run/php-fpm.sock {
             transport fastcgi {
                 root /var/www/agendav/web/public
