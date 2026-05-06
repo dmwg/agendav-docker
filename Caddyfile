@@ -25,34 +25,23 @@
 
     # ── Redirect /view → /view/ ─────────────────────────────────────────────────
     redir /view /view/ permanent
+ 
+    # ── Serve AgenDAV under /view/ and /view (exact) ───────────────────────────
+    handle /view/* {
 
-    # Strip /view from the URI up front, before any routing logic.
-    # This runs for all /view/* requests unconditionally.
-    uri /view/* strip_prefix /view
+        root * /var/www/agendav/web/public
 
-    # Now all /view/* requests have been rewritten to /* internally.
-    # root is set globally so both file_server and reverse_proxy see it.
-    root * /var/www/agendav/web/public
+        # Rewrite all non-file requests to /cal/index.php, preserving the
+        # full /cal prefix so Symfony can correctly compute the base path.
+        @notfile not file {path}
+        rewrite @notfile /view/index.php
 
-    route {
-        # Serve real files from disk directly.
-        # pass_thru falls through to reverse_proxy when file not found.
-        file_server {
-            pass_thru
+        php_fastcgi unix//run/php-fpm.sock {
+            env HTTPS on
+            root /var/www/agendav/web/public
         }
 
-        # All other requests go to PHP-FPM.
-        # SCRIPT_NAME uses /view/index.php so Symfony computes the base path
-        # correctly: REQUEST_URI /view/login minus base /view = route /login.
-        reverse_proxy unix//run/php-fpm.sock {
-            transport fastcgi {
-                root /var/www/agendav/web/public
-                split .php
-                env SCRIPT_FILENAME /var/www/agendav/web/public/index.php
-                env SCRIPT_NAME     /view/index.php
-                env HTTPS           on
-            }
-        }
+        file_server
     }
 
     # ── Health-check ──────────────────────────────────────────────────────────
