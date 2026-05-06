@@ -26,24 +26,33 @@
     # ── Redirect /view → /view/ ─────────────────────────────────────────────────
     redir /view /view/ permanent
 
-    # Strip /view from the URI up front, before any routing logic.
-    # This runs for all /view/* requests unconditionally.
-    uri /view/* strip_prefix /view
+    # ── Static assets ─────────────────────────────────────────────────────────
+    # Requests that map to a real file under web/public are served directly.
+    # Strip /view so the file_server can find them on disk.
+    handle_path /view/index.php {
+        # Prevent direct requests to index.php falling through to file_server.
+        # Route them to PHP below instead.
+        redir / /view/ permanent
+    }
 
-    # Now all /view/* requests have been rewritten to /* internally.
-    # root is set globally so both file_server and reverse_proxy see it.
-    root * /var/www/agendav/web/public
-
-    route {
-        # Serve real files from disk directly.
-        # pass_thru falls through to reverse_proxy when file not found.
-        file_server {
-            pass_thru
+    @static {
+        path /view/*
+        file {
+            root /var/www/agendav/web/public
+            try_files {path_regexp /view/(.*) /$1}
         }
+    }
+    handle @static {
+        root * /var/www/agendav/web/public
+        uri strip_prefix /view
+        file_server
+    }
 
-        # All other requests go to PHP-FPM.
-        # SCRIPT_NAME uses /view/index.php so Symfony computes the base path
-        # correctly: REQUEST_URI /view/login minus base /view = route /login.
+    # ── PHP requests ──────────────────────────────────────────────────────────
+    # All /view/* requests that aren't static files go to PHP-FPM.
+    # We set SCRIPT_NAME to /view/index.php so Symfony's base-path detection
+    # correctly strips /view from REQUEST_URI when computing the route.
+    handle /view/* {
         reverse_proxy unix//run/php-fpm.sock {
             transport fastcgi {
                 root /var/www/agendav/web/public
