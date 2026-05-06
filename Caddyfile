@@ -1,21 +1,8 @@
-# ──────────────────────────────────────────────────────────────────────────────
-# Caddyfile for AgenDAV served at a subdirectory (default: /view)
-#
-# Caddy sits behind an upstream reverse proxy that terminates TLS.
-# It handles:
-#   - stripping the path prefix before passing requests to PHP-FPM
-#   - trusting X-Forwarded-* headers from the upstream proxy
-#   - serving AgenDAV's static assets directly (bypass PHP-FPM)
-# ──────────────────────────────────────────────────────────────────────────────
-
 {
     admin off
     auto_https off
     debug
 
-    # trusted_proxies is a global option — it cannot appear inside a site block.
-    # This tells Caddy to trust X-Forwarded-* headers from these source IPs.
-    # Restrict to your actual upstream IP/subnet in production.
     servers {
         trusted_proxies static private_ranges
     }
@@ -23,36 +10,21 @@
 
 :8080 {
 
-    # ── Redirect /view → /view/ ─────────────────────────────────────────────────
+    # ── Redirect /view → /view/ ─────────────────────────────────────────────
     redir /view /view/ permanent
 
-    # ── Static assets ─────────────────────────────────────────────────────────
-    # Requests that map to a real file under web/public are served directly.
-    # Strip /view so the file_server can find them on disk.
-    handle_path /view/index.php {
-        # Prevent direct requests to index.php falling through to file_server.
-        # Route them to PHP below instead.
-        redir / /view/ permanent
-    }
-
-    @static {
-        path /view/*
-        file {
-            root /var/www/agendav/web/public
-            try_files {path_regexp /view/(.*) /$1}
-        }
-    }
-    handle @static {
+    # ── Static assets ───────────────────────────────────────────────────────
+    # handle_path strips /view before passing to file_server.
+    # If the file doesn't exist on disk, the request falls through to the
+    # next matching handle block (PHP below).
+    handle_path /view/* {
         root * /var/www/agendav/web/public
-        uri strip_prefix /view
+        try_files {path} @php
         file_server
     }
 
-    # ── PHP requests ──────────────────────────────────────────────────────────
-    # All /view/* requests that aren't static files go to PHP-FPM.
-    # We set SCRIPT_NAME to /view/index.php so Symfony's base-path detection
-    # correctly strips /view from REQUEST_URI when computing the route.
-    handle /view/* {
+    # ── PHP requests ────────────────────────────────────────────────────────
+    handle @php {
         reverse_proxy unix//run/php-fpm.sock {
             transport fastcgi {
                 root /var/www/agendav/web/public
@@ -64,10 +36,10 @@
         }
     }
 
-    # ── Health-check ──────────────────────────────────────────────────────────
+    # ── Health-check ────────────────────────────────────────────────────────
     respond /healthz 200
 
-    # ── Anything else → 404 ───────────────────────────────────────────────────
+    # ── Anything else → 404 ─────────────────────────────────────────────────
     handle {
         respond "Not found - path: {http.request.uri}" 404
     }
