@@ -1,18 +1,24 @@
-version: "2"
+version: "3"
 
 services:
   agendav:
-    image: ghcr.io/nagimov/agendav-docker:latest
-    container_name: agendav
-    environment:
-      - AGENDAV_SERVER_NAME=127.0.0.1
-      - AGENDAV_TITLE=Welcome to Example Agendav Server
-      - AGENDAV_FOOTER=Hosted by Example Company
-      - AGENDAV_CALDAV_SERVER=https://baikal.example.com/cal.php
-      - AGENDAV_CALDAV_PUBLIC_URL=https://baikal.example.com
-      - AGENDAV_TIMEZONE=UTC
-      - AGENDAV_LANG=en
-      - AGENDAV_LOG_DIR=/tmp/
-      - AGENDAV_WEEKSTART=1
+    build:
+      context: ./agendav-docker
+      dockerfile: Dockerfile
+    container_name: caldav_frontend
+    volumes:
+      # Required: your AgenDAV configuration
+      - ./agendav-config/settings.php:/var/www/agendav/web/config/settings.php:ro
+      - agendav_data:/var/agendav
     ports:
-      - "80:8080"
+      - '127.0.0.1:9002:8080'
+
+volumes:
+  agendav_data:
+  
+#~ networks:
+  #~ default:
+    #~ ipam:
+      #~ config:
+        #~ - subnet: 192.168.96.0/24
+          #~ gateway: 192.168.96.1
