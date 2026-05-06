@@ -1,5 +1,5 @@
 # ──────────────────────────────────────────────────────────────────────────────
-# Caddyfile for AgenDAV served at a subdirectory (default: /cal)
+# Caddyfile for AgenDAV served at a subdirectory (default: /view)
 #
 # Caddy sits behind an upstream reverse proxy that terminates TLS.
 # It handles:
@@ -22,12 +22,12 @@
 
 :8080 {
 
-    # ── Redirect /cal → /cal/ ─────────────────────────────────────────────────
-    redir /cal /cal/ permanent
+    # ── Redirect /view → /view/ ─────────────────────────────────────────────────
+    redir /view /view/ permanent
 
     # ── Strip prefix, then serve AgenDAV ─────────────────────────────────────
-    handle /cal/* {
-        uri strip_prefix /cal
+    handle /view/* {
+        uri strip_prefix /view
 
         # Static assets: serve directly from disk (no PHP needed).
         # Caddy tries the file first; if not found, falls through to PHP-FPM.
