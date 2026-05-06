@@ -26,22 +26,42 @@
     # ── Redirect /view → /view/ ─────────────────────────────────────────────────
     redir /view /view/ permanent
 
-    # ── Serve AgenDAV under /view/ and /view (exact) ───────────────────────────
-    handle /view/* {
+    # ── Static assets ─────────────────────────────────────────────────────────
+    # Requests that map to a real file under web/public are served directly.
+    # Strip /view so the file_server can find them on disk.
+    handle_path /view/index.php {
+        # Prevent direct requests to index.php falling through to file_server.
+        # Route them to PHP below instead.
+        redir / /view/ permanent
+    }
 
-        root * /var/www/agendav/web/public
-
-        # Rewrite all non-file requests to /cal/index.php, preserving the
-        # full /cal prefix so Symfony can correctly compute the base path.
-        @notfile not file {path}
-        rewrite @notfile /view/index.php
-
-        php_fastcgi unix//run/php-fpm.sock {
-            env HTTPS on
+    @static {
+        path /view/*
+        file {
             root /var/www/agendav/web/public
+            try_files {path_regexp /view/(.*) /$1}
         }
-
+    }
+    handle @static {
+        root * /var/www/agendav/web/public
+        uri strip_prefix /view
         file_server
+    }
+
+    # ── PHP requests ──────────────────────────────────────────────────────────
+    # All /view/* requests that aren't static files go to PHP-FPM.
+    # We set SCRIPT_NAME to /view/index.php so Symfony's base-path detection
+    # correctly strips /view from REQUEST_URI when computing the route.
+    handle /view/* {
+        reverse_proxy unix//run/php-fpm.sock {
+            transport fastcgi {
+                root /var/www/agendav/web/public
+                split .php
+                env SCRIPT_FILENAME /var/www/agendav/web/public/index.php
+                env SCRIPT_NAME     /view/index.php
+                env HTTPS           on
+            }
+        }
     }
 
     # ── Health-check ──────────────────────────────────────────────────────────
