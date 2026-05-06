@@ -10,8 +10,7 @@ fi
 
 # ── Run DB migrations (idempotent) ────────────────────────────────────────────
 echo "Running AgenDAV database migrations..."
-cd /var/www/agendav
-php bin/agendavcli migrations:migrate --no-interaction
+php /var/www/agendav/bin/agendavcli migrations:migrate --no-interaction
 
 # ── Start PHP-FPM in the background ──────────────────────────────────────────
 echo "Starting PHP-FPM..."
