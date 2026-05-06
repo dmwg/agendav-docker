@@ -7,7 +7,7 @@ RUN apk add --no-cache \
         sqlite \
         curl \
         unzip \
-    && docker-php-ext-install pdo pdo_pgsql pdo_sqlite
+    && docker-php-ext-install pdo pdo_sqlite
 
 # ── AgenDAV ───────────────────────────────────────────────────────────────────
 ARG AGENDAV_VERSION=2.6.0
