@@ -4,10 +4,10 @@ FROM php:8.2-fpm-alpine AS base
 RUN apk add --no-cache \
         caddy \
         postgresql-client \
-        sqlite \
+        sqlite-libs \
         curl \
         unzip \
-    && docker-php-ext-install pdo pdo_sqlite
+    && docker-php-ext-install pdo
 
 # ── AgenDAV ───────────────────────────────────────────────────────────────────
 ARG AGENDAV_VERSION=2.6.0
