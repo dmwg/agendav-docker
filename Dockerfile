@@ -23,6 +23,7 @@ ADD https://curl.se/ca/cacert.pem /etc/ssl/certs/
 
 # ── AgenDAV ───────────────────────────────────────────────────────────────────
 ARG AGENDAV_VERSION=2.6.0
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 RUN git clone https://github.com/dmwg/agendav/ /var/www/agendav \
      && cd /var/www/agendav \
      && git pull \
