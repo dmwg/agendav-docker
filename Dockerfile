@@ -20,9 +20,7 @@ RUN apk add --no-cache \
         curl \
         unzip \
         ca-certificates \
-    && docker-php-ext-install pdo && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && docker-php-ext-install pdo
 
 # ── AgenDAV ───────────────────────────────────────────────────────────────────
 ARG AGENDAV_VERSION=2.6.0
