@@ -45,8 +45,8 @@ COPY Caddyfile /etc/caddy/Caddyfile
 COPY entrypoint.sh /entrypoint.sh
 RUN mkdir -p /var/agendav && \
     touch /var/agendav/db.sqlite && \
-    chown -R www-data:www-data /var/agendav && \
     chmod 640 /var/agendav/db.sqlite && \
+    chown -R www-data:www-data /var/agendav && \
     chmod 644 /etc/ssl/certs/cacert.pem && \
     chown -R www-data:www-data ${PHP_INI_DIR} && \
     cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini && \
@@ -57,5 +57,5 @@ RUN mkdir -p /var/agendav && \
     chmod +x /entrypoint.sh
 
 EXPOSE 8080
-
+USER www-data
 ENTRYPOINT ["/entrypoint.sh"]
