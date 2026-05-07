@@ -30,11 +30,9 @@ RUN git clone https://github.com/dmwg/agendav/ /var/www/agendav \
 RUN curl -fsSL \
         "https://github.com/agendav/agendav/releases/download/${AGENDAV_VERSION}/agendav-${AGENDAV_VERSION}.tar.gz" \
         -o /tmp/agendav.tar.gz \
-    && tar -xzf /tmp/agendav.tar.gz -C /tmp/agendav --strip-components=1 \
-    && cp -r /tmp/agendav/web/vendor /var/www/agendav/web/ \
-    && chown -R www-data:www-data /var/www/agendav \
-    && rm -rf /tmp/agendav*
-
+    && tar -xzf /tmp/agendav.tar.gz -C /var/www/agendav/web/ --strip-components=2 agendav-${AGENDAV_VERSION}/web/vendor \
+    && chown -R www-data:www-data /var/www/agendav 
+    
 # ── PHP-FPM: Unix socket config ───────────────────────────────────────────────
 # Drop a dedicated pool override instead of sed-patching the default www.conf,
 # which is fragile due to varying comment styles across image versions.
