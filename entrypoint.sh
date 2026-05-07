@@ -12,8 +12,6 @@ fi
 #~ echo "Running AgenDAV database migrations..."
 cd /var/www/agendav
 yes | php agendavcli migrations:migrate
-chmod 640 /var/agendav/db.sqlite
-chown -R www-data:www-data /var/agendav
 
 # ── Start PHP-FPM in the background ──────────────────────────────────────────
 echo "Starting PHP-FPM..."

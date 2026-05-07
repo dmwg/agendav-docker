@@ -17,6 +17,7 @@ RUN apk add --no-cache \
         git \
         unzip \
         ca-certificates \
+        libpq-dev \
     && docker-php-ext-install pdo pdo_pgsql
 ADD https://curl.se/ca/cacert.pem /etc/ssl/certs/
 
@@ -44,9 +45,6 @@ COPY Caddyfile /etc/caddy/Caddyfile
 # ── Entrypoint ────────────────────────────────────────────────────────────────
 COPY entrypoint.sh /entrypoint.sh
 RUN mkdir -p /var/agendav && \
-    touch /var/agendav/db.sqlite && \
-    chmod 640 /var/agendav/db.sqlite && \
-    chown -R www-data:www-data /var/agendav && \
     chmod 644 /etc/ssl/certs/cacert.pem && \
     chown -R www-data:www-data /usr/local/etc/php && \
     cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini && \
