@@ -17,6 +17,7 @@ RUN apk add --no-cache \
         git \
         unzip \
         ca-certificates \
+        npm \
     && docker-php-ext-install pdo
 ADD https://curl.se/ca/cacert.pem /etc/ssl/certs/
 
@@ -24,14 +25,17 @@ ADD https://curl.se/ca/cacert.pem /etc/ssl/certs/
 ARG AGENDAV_VERSION=2.6.0
 RUN git clone https://github.com/dmwg/agendav/ /var/www/agendav \
      && cd /var/www/agendav \
-     && git pull
+     && git pull \
+     && npm install \
+     && npm run-script dist \
+     && chown -R www-data:www-data /var/www/agendav 
 #COPY vendor /var/www/agendav/web/vendor
 
-RUN curl -fsSL \
-        "https://github.com/agendav/agendav/releases/download/${AGENDAV_VERSION}/agendav-${AGENDAV_VERSION}.tar.gz" \
-        -o /tmp/agendav.tar.gz \
-    && tar -xzf /tmp/agendav.tar.gz -C /var/www/agendav/web/ --strip-components=2 agendav-${AGENDAV_VERSION}/web/vendor \
-    && chown -R www-data:www-data /var/www/agendav 
+#RUN curl -fsSL \
+#        "https://github.com/agendav/agendav/releases/download/${AGENDAV_VERSION}/agendav-${AGENDAV_VERSION}.tar.gz" \
+#        -o /tmp/agendav.tar.gz \
+#    && tar -xzf /tmp/agendav.tar.gz -C /var/www/agendav/web/ --strip-components=2 agendav-${AGENDAV_VERSION}/web/vendor \
+#    && chown -R www-data:www-data /var/www/agendav 
     
 # ── PHP-FPM: Unix socket config ───────────────────────────────────────────────
 # Drop a dedicated pool override instead of sed-patching the default www.conf,
