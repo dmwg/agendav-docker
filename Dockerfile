@@ -29,7 +29,7 @@ ARG AGENDAV_VERSION=2.6.0
 #    && rm /tmp/agendav.tar.gz \
 #    && chown -R www-data:www-data /var/www/agendav
 RUN git clone https://github.com/dmwg/agendav/ /var/www/agendav
-COPY vendor /var/www/agendav/web/ 
+COPY vendor /var/www/agendav/web/vendor
 RUN chown -R www-data:www-data /var/www/agendav
 
 # ── PHP-FPM: Unix socket config ───────────────────────────────────────────────
