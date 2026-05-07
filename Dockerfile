@@ -19,7 +19,6 @@ RUN apk add --no-cache \
         sqlite-libs \
         curl \
         unzip \
-        apt-transport-https \
         ca-certificates \
     && docker-php-ext-install pdo && \
     apt-get clean && \
