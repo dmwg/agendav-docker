@@ -14,6 +14,7 @@ RUN apk add --no-cache \
         postgresql-client \
         sqlite-libs \
         curl \
+        git \
         unzip \
         ca-certificates \
     && docker-php-ext-install pdo
@@ -21,18 +22,18 @@ ADD https://curl.se/ca/cacert.pem /etc/ssl/certs/
 
 # ── AgenDAV ───────────────────────────────────────────────────────────────────
 ARG AGENDAV_VERSION=2.6.0
-#RUN curl -fsSL \
-#        "https://github.com/agendav/agendav/releases/download/${AGENDAV_VERSION}/agendav-${AGENDAV_VERSION}.tar.gz" \
-#        -o /tmp/agendav.tar.gz \
-#    && mkdir -p /var/www/agendav \
-#    && tar -xzf /tmp/agendav.tar.gz -C /var/www/agendav --strip-components=1 \
-#    && rm /tmp/agendav.tar.gz \
-#    && chown -R www-data:www-data /var/www/agendav
 RUN git clone https://github.com/dmwg/agendav/ /var/www/agendav \
      && cd /var/www/agendav \
      && git pull
-COPY vendor /var/www/agendav/web/vendor
-RUN chown -R www-data:www-data /var/www/agendav
+#COPY vendor /var/www/agendav/web/vendor
+
+RUN curl -fsSL \
+        "https://github.com/agendav/agendav/releases/download/${AGENDAV_VERSION}/agendav-${AGENDAV_VERSION}.tar.gz" \
+        -o /tmp/agendav.tar.gz \
+    && tar -xzf /tmp/agendav.tar.gz -C /tmp/agendav --strip-components=1 \
+    && cp -r /tmp/agendav/web/vendor /var/www/agendav/web/ \
+    && chown -R www-data:www-data /var/www/agendav \
+    && rm -rf /tmp/agendav*
 
 # ── PHP-FPM: Unix socket config ───────────────────────────────────────────────
 # Drop a dedicated pool override instead of sed-patching the default www.conf,
