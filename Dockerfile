@@ -21,6 +21,7 @@ RUN apk add --no-cache \
         unzip \
         ca-certificates \
     && docker-php-ext-install pdo
+ADD https://curl.se/ca/cacert.pem /etc/ssl/certs/
 
 # ── AgenDAV ───────────────────────────────────────────────────────────────────
 ARG AGENDAV_VERSION=2.6.0
