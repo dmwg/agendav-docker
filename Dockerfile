@@ -28,7 +28,7 @@ ARG AGENDAV_VERSION=2.6.0
 #    && tar -xzf /tmp/agendav.tar.gz -C /var/www/agendav --strip-components=1 \
 #    && rm /tmp/agendav.tar.gz \
 #    && chown -R www-data:www-data /var/www/agendav
-RUN git clone https://github.com/dmwg/agendav/ /var/www/
+RUN git clone https://github.com/dmwg/agendav/ /var/www/agendav
 COPY vendor /var/www/agendav/web/ 
 RUN chown -R www-data:www-data /var/www/agendav
 
