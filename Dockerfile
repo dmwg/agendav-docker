@@ -6,10 +6,6 @@ FROM caddy:2-alpine AS caddy
 # ── Stage 2: PHP-FPM + AgenDAV ───────────────────────────────────────────────
 FROM php:8.2-fpm-alpine
 
-
-ENV AGENDAV_TIMEZONE=UTC
-ENV PHP_INI_DIR /usr/local/etc/php
- 
 # ── Copy Caddy from the official image ────────────────────────────────────────
 COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
 
@@ -48,14 +44,14 @@ RUN mkdir -p /var/agendav && \
     chmod 640 /var/agendav/db.sqlite && \
     chown -R www-data:www-data /var/agendav && \
     chmod 644 /etc/ssl/certs/cacert.pem && \
-    chown -R www-data:www-data ${PHP_INI_DIR} && \
-    cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini && \
-    echo 'date.timezone = "AGENDAV_TIMEZONE"' >> ${PHP_INI_DIR}/php.ini && \
-    echo 'magic_quotes_runtime = false' >> ${PHP_INI_DIR}/php.ini && \
-    echo 'openssl.cafile = "/etc/ssl/certs/cacert.pem"' >> ${PHP_INI_DIR}/php.ini && \
-    echo 'curl.cainfo = "/etc/ssl/certs/cacert.pem"' >> ${PHP_INI_DIR}/php.ini && \
+    chown -R www-data:www-data /usr/local/etc/php && \
+    cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini && \
+    echo 'date.timezone = "Europe/Berlin"' >> /usr/local/etc/php/php.ini && \
+    echo 'magic_quotes_runtime = false' >> /usr/local/etc/php/php.ini && \
+    echo 'openssl.cafile = "/etc/ssl/certs/cacert.pem"' >> /usr/local/etc/php/php.ini && \
+    echo 'curl.cainfo = "/etc/ssl/certs/cacert.pem"' >> /usr/local/etc/php/php.ini && \
     chmod +x /entrypoint.sh
 
 EXPOSE 8080
-USER www-data
+
 ENTRYPOINT ["/entrypoint.sh"]
