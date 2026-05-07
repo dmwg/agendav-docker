@@ -33,7 +33,6 @@
                     env SCRIPT_FILENAME /var/www/agendav/web/public/index.php
                     env SCRIPT_NAME     /view/index.php
                     env HTTPS           on
-                    env AGENDAV_ENVIRONMENT dev
                 }
             }
         }
