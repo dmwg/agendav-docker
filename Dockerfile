@@ -17,7 +17,7 @@ RUN apk add --no-cache \
         git \
         unzip \
         ca-certificates \
-    && docker-php-ext-install pdo
+    && docker-php-ext-install pdo pdo_pgsql
 ADD https://curl.se/ca/cacert.pem /etc/ssl/certs/
 
 # ── AgenDAV ───────────────────────────────────────────────────────────────────
